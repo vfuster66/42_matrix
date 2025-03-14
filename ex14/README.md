@@ -67,12 +67,14 @@ Un **logiciel est fourni** avec cet exercice pour visualiser l'effet d'une matri
 ### Étape 1 : Générer le fichier de projection
 Exécutez la commande suivante pour créer un fichier contenant la matrice de projection :
 ```sh
-python3 -m ex14.generate_proj
+make generate_proj
+cp proj ex14/proj
 ```
 
 ### Étape 2 : Lancer l'affichage
 Une fois le fichier généré, utilisez la commande suivante pour afficher la projection en 3D :
 ```sh
+cd ex14
 ./display
 ```
 

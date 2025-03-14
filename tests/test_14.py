@@ -1,58 +1,74 @@
-import unittest
-import math
-from ex14.matrix import Matrix
-from colorama import Fore, Style
+from math import tan
+from ex00.matrix import Matrix
+from printer import Printer
+
+# Constante pi
+PI = 3.141592653589793
 
 
-class TestMatrixProjection(unittest.TestCase):
-
-    def matrices_almost_equal(self, mat1, mat2, tol=1e-5):
-        """Compare deux matrices en vérifiant si
-        chaque élément est proche avec une tolérance."""
-        for row1, row2 in zip(mat1, mat2):
-            for a, b in zip(row1, row2):
-                if abs(a - b) > tol:
-                    return False
-        return True
-
-    def print_test(self, test_name, operation, expected, obtained):
-        """Affichage détaillé des tests."""
-        print(f"\n{Fore.CYAN}Test: {test_name}{Style.RESET_ALL}")
-        print(f"{Fore.YELLOW}Opération :{Style.RESET_ALL} {operation}")
-        print(f"{Fore.GREEN}Résultat attendu :{Style.RESET_ALL}\n{expected}")
-        print(f"{Fore.BLUE}Résultat obtenu  :{Style.RESET_ALL}\n{obtained}")
-
-        if self.matrices_almost_equal(expected.values, obtained.values):
-            print(f"{Fore.GREEN}✅ Test OK !{Style.RESET_ALL}")
-        else:
-            print(f"{Fore.RED}❌ Test ÉCHOUÉ !{Style.RESET_ALL}")
-        print("-" * 50)
-
-    def test_projection_matrix(self):
-        """Test de la matrice de projection standard."""
-
-        fov = math.radians(90)
-        ratio = 16/9
-        near = 0.1
-        far = 100.0
-
-        expected = Matrix([
-            [1.0 / (math.tan(fov / 2) * ratio), 0, 0, 0],
-            [0, 1.0 / math.tan(fov / 2), 0, 0],
-            [0, 0, (far + near) / (near - far),
-             (2 * far * near) / (near - far)],
-            [0, 0, -1, 0]
-        ])
-
-        result = Matrix.projection(fov, ratio, near, far)
-
-        self.print_test(
-            "Matrice de projection", "Matrix.projection()", expected, result
-        )
-        self.assertTrue(
-            self.matrices_almost_equal(expected.values, result.values)
-        )
+def degrees_to_radians(degrees):
+    """Convertit des degrés en radians."""
+    return degrees * (PI / 180)
 
 
-if __name__ == "__main__":
-    unittest.main(verbosity=1)
+def isclose_matrix(m1, m2, rel_tol=1e-9):
+    """Compare deux matrices avec une tolérance sur les floats."""
+    for row1, row2 in zip(m1.values, m2.values):
+        for a, b in zip(row1, row2):
+            if abs(a - b) > rel_tol * max(abs(a), abs(b), 1.0):
+                return False
+    return True
+
+
+def test_projection_matrix():
+    printer = Printer()
+    printer.section("Projection Perspective Matrix 4x4")
+
+    # ➤ Paramètres
+    fov_deg = 90
+    fov_rad = degrees_to_radians(fov_deg)
+    f = 1.0 / tan(fov_rad / 2)
+
+    ratio = 16 / 9
+    near = 1.0
+    far = 500.0
+
+    # ➤ Génération de la matrice
+    P = Matrix.projection(f, ratio, near, far)
+
+    # ➤ Matrice attendue calculée à la main
+    nf = 1 / (near - far)
+    a = (far + near) * nf
+    b = (2 * far * near) * nf
+
+    expected = Matrix([
+        [f / ratio, 0.0, 0.0, 0.0],
+        [0.0, f, 0.0, 0.0],
+        [0.0, 0.0, a, b],
+        [0.0, 0.0, -1.0, 0.0]
+    ])
+
+    assert isclose_matrix(P, expected)
+    printer.success("Projection perspective matrix generated successfully ✅")
+
+
+def test_to_column_major():
+    printer = Printer()
+    printer.section("Column Major Projection Matrix")
+
+    # ➤ Paramètres
+    fov_deg = 90
+    fov_rad = degrees_to_radians(fov_deg)
+    f = 1.0 / tan(fov_rad / 2)
+
+    ratio = 16 / 9
+    near = 1.0
+    far = 500.0
+
+    # ➤ Génération de la matrice
+    P = Matrix.projection(f, ratio, near, far)
+    col_major = P.to_column_major()
+
+    # ➤ Vérification simple ➔ dimension correcte
+    assert col_major.shape() == (4, 4)
+    printer.success("Column major conversion successful ✅")

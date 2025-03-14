@@ -1,31 +1,21 @@
-"""
-Module contenant la fonction pour calculer une combinaison linéaire de
-vecteurs.
-"""
-
-from typing import List
-from ex01.vector import Vector
+from ex00.vector import Vector
 
 
-def linear_combination(vectors: List[Vector], coefs: List[float]) -> Vector:
-    """Calcule la combinaison linéaire des vecteurs avec les coefficients."""
+def linear_combination(vectors: list[Vector], coefs: list[float]) -> Vector:
     if len(vectors) != len(coefs):
         raise ValueError(
-            "Les listes de vecteurs et de coefficients "
-            "doivent avoir la même taille.")
+            "Vectors and coefficients lists must be of same length"
+        )
 
-    if not vectors:
-        return Vector([0])
+    # Initialisation d'un vecteur nul de la bonne taille
+    dim = vectors[0].size()
+    result_values = [0.0] * dim
 
-    dim = len(vectors[0].values)
-    if any(len(vec.values) != dim for vec in vectors):
-        raise ValueError("Tous les vecteurs doivent avoir la même dimension.")
+    for vector, coef in zip(vectors, coefs):
+        if vector.size() != dim:
+            raise ValueError("All vectors must have the same dimension")
+        # Ajout de chaque composante multipliée par le coefficient
+        for i in range(dim):
+            result_values[i] += vector.values[i] * coef
 
-    # Initialisation avec un vecteur nul de même dimension
-    result = Vector([0] * dim)
-
-    # Calcul de la combinaison linéaire
-    for vec, coef in zip(vectors, coefs):
-        result = result + (vec * coef)
-
-    return result
+    return Vector(result_values)

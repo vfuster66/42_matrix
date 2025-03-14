@@ -1,23 +1,11 @@
-from ex03.vector import Vector
+from ex00.vector import Vector
 
 
-def dot(u, v):
-    """Calcule le produit scalaire de deux vecteurs en appelant `Vector.dot()`.
-
-    Args:
-        u (Vector): Premier vecteur.
-        v (Vector): Deuxième vecteur.
-
-    Returns:
-        float: Produit scalaire ⟨u|v⟩.
-
-    Raises:
-        TypeError: Si `u` et `v` ne sont pas des instances de `Vector`.
-        ValueError: Si les vecteurs n'ont pas la même dimension.
-    """
+def dot(u: Vector, v: Vector) -> float:
+    """Produit scalaire entre deux vecteurs."""
     if not isinstance(u, Vector) or not isinstance(v, Vector):
-        raise TypeError(
-            "Les arguments doivent être des instances de `Vector`."
-        )
-
-    return u.dot(v)
+        raise TypeError("Both arguments must be Vectors.")
+    if u.size() != v.size():
+        raise ValueError("Vectors must have the same dimension.")
+    
+    return sum(x * y for x, y in zip(u.values, v.values))

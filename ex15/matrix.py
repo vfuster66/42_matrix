@@ -1,12 +1,10 @@
 from ex15.complex import Complex
 
-
 class Matrix:
     """Classe représentant une matrice de nombres complexes."""
 
     def __init__(self, values):
-        """Initialise une matrice
-        avec une liste de listes de nombres complexes."""
+        """Initialise une matrice avec une liste de listes de nombres complexes."""
         self.values = values
         self.rows = len(values)
         self.cols = len(values[0]) if self.rows > 0 else 0
@@ -15,22 +13,16 @@ class Matrix:
         return isinstance(other, Matrix) and self.values == other.values
 
     def __add__(self, other):
-        """Additionne deux matrices complexes."""
+        """Addition de matrices complexes."""
         return Matrix([
-            [
-                self.values[i][j] + other.values[i][j]
-                for j in range(self.cols)
-            ]
+            [self.values[i][j] + other.values[i][j] for j in range(self.cols)]
             for i in range(self.rows)
         ])
 
     def __sub__(self, other):
         """Soustraction de matrices complexes."""
         return Matrix([
-            [
-                self.values[i][j] - other.values[i][j]
-                for j in range(self.cols)
-            ]
+            [self.values[i][j] - other.values[i][j] for j in range(self.cols)]
             for i in range(self.rows)
         ])
 
@@ -44,14 +36,9 @@ class Matrix:
     def mul_mat(self, other):
         """Multiplication de matrices complexes."""
         if self.cols != other.rows:
-            raise ValueError(
-                "Multiplication impossible : dimensions incompatibles."
-                )
-
-        result = [
-            [Complex(0, 0) for _ in range(other.cols)]
-            for _ in range(self.rows)
-        ]
+            raise ValueError("Multiplication impossible : dimensions incompatibles.")
+        
+        result = [[Complex(0, 0) for _ in range(other.cols)] for _ in range(self.rows)]
         for i in range(self.rows):
             for j in range(other.cols):
                 for k in range(self.cols):
@@ -75,9 +62,7 @@ class Matrix:
     def determinant(self):
         """Calcule le déterminant d'une matrice carrée."""
         if self.rows != self.cols:
-            raise ValueError(
-                "Le déterminant est défini pour les matrices carrées."
-                )
+            raise ValueError("Le déterminant est défini pour les matrices carrées.")
 
         if self.rows == 1:
             return self.values[0][0]
@@ -99,12 +84,12 @@ class Matrix:
         return det
 
     def inverse(self):
-        """Calcule l'inverse d'une matrice
-        en utilisant la méthode appropriée."""
+        """Calcule l'inverse d'une matrice en utilisant la méthode appropriée."""
         det = self.determinant()
         if det == Complex(0, 0):
             raise ValueError("La matrice est singulière et n'a pas d'inverse.")
-
+        
+        # Cas spécifique pour matrice 2x2
         if self.rows == 2:
             a, b = self.values[0]
             c, d = self.values[1]
@@ -113,9 +98,9 @@ class Matrix:
                 [d * inv_det, -b * inv_det],
                 [-c * inv_det, a * inv_det]
             ])
-
+        
+        # Cas général pour matrice NxN
         n = self.rows
-
         augmented = []
         for i in range(n):
             row = self.values[i].copy()
@@ -125,22 +110,17 @@ class Matrix:
             augmented.append(row)
 
         for i in range(n):
-
             max_row = i
             for k in range(i + 1, n):
-                if (abs(augmented[k][i].real) + abs(augmented[k][i].imag)) > \
-                   (abs(augmented[max_row][i].real) +
-                        abs(augmented[max_row][i].imag)):
+                if abs(augmented[k][i].real) + abs(augmented[k][i].imag) > \
+                   abs(augmented[max_row][i].real) + abs(augmented[max_row][i].imag):
                     max_row = k
 
             if augmented[max_row][i] == Complex(0, 0):
-                raise ValueError(
-                    "La matrice est singulière et n'a pas d'inverse."
-                    )
+                raise ValueError("La matrice est singulière et n'a pas d'inverse.")
 
             if max_row != i:
-                augmented[i], augmented[max_row] = \
-                    augmented[max_row], augmented[i]
+                augmented[i], augmented[max_row] = augmented[max_row], augmented[i]
 
             pivot = augmented[i][i]
             for j in range(2*n):
@@ -150,8 +130,7 @@ class Matrix:
                 if k != i:
                     factor = augmented[k][i]
                     for j in range(2*n):
-                        augmented[k][j] = augmented[k][j] - \
-                            factor * augmented[i][j]
+                        augmented[k][j] = augmented[k][j] - factor * augmented[i][j]
 
         inverse = []
         for i in range(n):
@@ -164,11 +143,9 @@ class Matrix:
         mat = [row[:] for row in self.values]
         rows, cols = self.rows, self.cols
         pivot_row = 0
-
         epsilon = 1e-10
 
         for col in range(cols):
-
             max_val = 0
             max_row = -1
             for r in range(pivot_row, rows):
@@ -193,7 +170,6 @@ class Matrix:
                         mat[r][c] = mat[r][c] - factor * mat[pivot_row][c]
 
             pivot_row += 1
-
             if pivot_row >= rows:
                 break
 
@@ -206,7 +182,6 @@ class Matrix:
         epsilon = 1e-10
 
         for row in ref:
-
             if any(
                 abs(c.real) > epsilon or abs(c.imag) > epsilon
                 for c in row

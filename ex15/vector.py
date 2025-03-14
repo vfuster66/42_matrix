@@ -5,6 +5,8 @@ class Vector:
     """Classe représentant un vecteur de nombres complexes."""
 
     def __init__(self, values):
+        """Initialise un vecteur avec une
+        liste de valeurs (complexes ou réelles)."""
         self.values = values
 
     def __add__(self, other):
@@ -12,6 +14,10 @@ class Vector:
 
     def __sub__(self, other):
         return Vector([a - b for a, b in zip(self.values, other.values)])
+
+    def conjugate(self):
+        """Retourne le vecteur conjugué de chaque élément."""
+        return Vector([x.conjugate() for x in self.values])
 
     def dot(self, other):
         total = Complex(0, 0)
@@ -43,7 +49,7 @@ class Vector:
         if len(self.values) != 3 or len(other.values) != 3:
             raise ValueError(
                 "Le produit vectoriel est défini en 3D uniquement."
-                )
+            )
         a, b, c = self.values
         d, e, f = other.values
         return Vector([

@@ -40,6 +40,16 @@ class Complex:
     def norm(self):
         return (self.real ** 2 + self.imag ** 2) ** 0.5
 
+    def hermitian_dot(u, v):
+        """Produit hermitien : <u|v> = conj(u) · v"""
+        if len(u) != len(v):
+            raise ValueError("Les vecteurs doivent avoir la même taille.")
+        return sum(a.conjugate() * b for a, b in zip(u, v))
+
+    def conjugate_vector(v):
+        """Retourne le vecteur conjugué de chaque élément du vecteur `v`."""
+        return [x.conjugate() for x in v]
+
     def __eq__(self, other):
         if isinstance(other, Complex):
             return self.real == other.real and self.imag == other.imag
